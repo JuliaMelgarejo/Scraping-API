@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @price_history %>
+
+<div>
+  <%= link_to "Edit this price history", edit_price_history_path(@price_history) %> |
+  <%= link_to "Back to price histories", price_histories_path %>
+
+  <%= button_to "Destroy this price history", @price_history, method: :delete %>
+</div>

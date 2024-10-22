@@ -1,0 +1,32 @@
+<%= form_with(model: price_history) do |form| %>
+  <% if price_history.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(price_history.errors.count, "error") %> prohibited this price_history from being saved:</h2>
+
+      <ul>
+        <% price_history.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :datte, style: "display: block" %>
+    <%= form.date_field :datte %>
+  </div>
+
+  <div>
+    <%= form.label :price, style: "display: block" %>
+    <%= form.text_field :price %>
+  </div>
+
+  <div>
+    <%= form.label :product_id, style: "display: block" %>
+    <%= form.text_field :product_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
