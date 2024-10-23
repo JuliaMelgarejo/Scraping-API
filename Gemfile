@@ -47,6 +47,11 @@ gem "bootsnap", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
+gem 'redis'
+gem 'nokogiri'  # Para hacer parsing de HTML
+gem 'httparty'  # Para realizar las peticiones HTTP
+gem 'sidekiq'   # Para manejar los jobs en background
+
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

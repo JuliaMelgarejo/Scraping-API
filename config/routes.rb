@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
+  # Ruta para iniciar el scraping
+  get 'start_scraping', to: 'scraping#start_scraping'
 end
