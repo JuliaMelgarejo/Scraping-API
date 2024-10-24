@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'admin/index'
   devise_for :users
   resources :links
   resources :subscriptions
@@ -7,15 +8,15 @@ Rails.application.routes.draw do
   resources :products
   resources :categories
   resources :users
+
+  resources :admin, only: [:index, :create, :update, :destroy]
+
   authenticated :user do
-    root to: redirect('/products'), as: :authenticated_root
+    root to: redirect('/categories'), as: :authenticated_root
   end
 
   unauthenticated do
     root to: redirect('/users/sign_in'), as: :unauthenticated_root
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  # root "articles#index"
 end
