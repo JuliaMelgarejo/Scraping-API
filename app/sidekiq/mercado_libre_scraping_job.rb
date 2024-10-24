@@ -1,5 +1,8 @@
 # app/workers/mercado_libre_scraping_worker.rb
 # app/jobs/mercado_libre_scraping_job.rb
+require 'bigdecimal'
+require 'bigdecimal/util'
+
 class MercadoLibreScrapingJob < ApplicationJob
   queue_as :default
 
@@ -13,24 +16,31 @@ class MercadoLibreScrapingJob < ApplicationJob
       File.open("scraping_output.html", "w") { |f| f.write(parsed_page.to_html) }
 
       parsed_page.css('.ui-search-result__wrapper').each do |item|
-     
-
         # Obtener el título del producto (nombre)
         title = item.css('.poly-component__title a').text.strip
 
         # Obtener el precio actual
-        price_text = item.css('.poly-price__current .andes-money-amount__fraction').text.strip
-        price = price_text.gsub('.', '').to_f
+        price_text = item.css('.andes-money-amount--current .andes-money-amount__fraction').text.strip
+        if price_text.blank?
+          # Si el precio actual no está disponible, intenta obtener el precio anterior
+          price_text = item.css('.andes-money-amount--previous .andes-money-amount__fraction').text.strip
+        end
+
+        # Verificar que price_text no esté vacío antes de procesarlo
+        next if price_text.blank?
+
+        # Eliminar puntos y convertir a BigDecimal
+        price = price_text.gsub('.', '').to_d # Convertir a BigDecimal
 
         if title.present? && price > 0
-          # Si quieres almacenar la marca también, agrega un campo en la base de datos para ello.
-          Product.create!(name: " #{title}".strip, price: price)
-          Rails.logger.info "Producto guardado:#{title}, Precio: #{price}"
+          # Almacenar el producto con su nombre y precio
+          Product.create!(name: title.strip, price: price)
+          Rails.logger.info "Producto guardado: #{title}, Precio: #{price}"
         else
           Rails.logger.warn "Datos incompletos: Título: #{title.inspect}, Precio: #{price.inspect}"
         end
+        #Rails.logger.info "Precio procesado: #{price}"
       end
-
     rescue HTTParty::Error => e
       Rails.logger.error "Error al hacer la solicitud HTTP: #{e.message}"
     rescue StandardError => e
@@ -38,33 +48,3 @@ class MercadoLibreScrapingJob < ApplicationJob
     end
   end
 end
-
-
-
-
-
-
-
-# class MercadoLibreScrapingWorker
-#   include Sidekiq::Worker
-
-#   def perform(url)
-#     # 1. Realizar la petición HTTP a la URL de MercadoLibre
-#     response = HTTParty.get(url)
-
-#     # 2. Parsear el HTML usando Nokogiri
-#     parsed_page = Nokogiri::HTML(response.body)
-
-#     # 3. Extraer la información de cada notebook (título, precio, etc.)
-#     parsed_page.css('.ui-search-result__wrapper').each do |item|
-#       title = item.css('.ui-search-item__title').text.strip
-#       price = item.css('.price-tag-fraction').text.strip
-
-#       # Almacenar o mostrar los datos (en este caso los imprime en consola)
-#       puts "Notebook: #{title}, Precio: $#{price}"
-
-#       # Aquí podrías guardar los datos en la base de datos si lo deseas
-#       # Product.create!(name: title, price: price)
-#     end
-#   end
-# end
