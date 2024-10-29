@@ -1,14 +1,19 @@
 Rails.application.routes.draw do
-  get 'admin/index'
+  get 'users', to: 'admin#index', as: :users_panel
   devise_for :users
   resources :links
   resources :subscriptions
   resources :notifications
   resources :price_histories
   resources :products
-  resources :categories
+  resources :categories, only: [:index, :show]
   resources :users
 
+ 
+  get 'admin/categories', to: 'admin_categories#index', as: :categories_panel
+
+  
+  resources :admin_categories, only: [:index, :create, :update, :destroy]
   resources :admin, only: [:index, :create, :update, :destroy]
 
   authenticated :user do
