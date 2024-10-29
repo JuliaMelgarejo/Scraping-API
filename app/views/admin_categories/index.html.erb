@@ -1,31 +1,26 @@
-
-
 <h1>Admin Categories</h1>
 
-<form action="<%= admin_categories_path %>" method="post">
+<%= form_with model: @category, url: admin_categories_path, local: true do |form| %>
   <div>
-    <label for="name">Nombre de la Categoría</label>
-    <input type="text" name="category[name]" id="name" placeholder="Introduce el nombre">
+    <%= form.label :name, "Nombre de la Categoría" %>
+    <%= form.text_field :name, placeholder: "Introduce el nombre" %>
   </div>
-  
-   <div>
-    <label for="link_id">Seleccionar Link</label>
-    <select name="link_id" id="link_id">
-      <option value="">Selecciona un link</option>
-      <% @links.each do |link| %>
-        <option value="<%= link.id %>"><%= link.url %> - <%= link.description %></option>
-      <% end %>
-    </select>
-  </div>
-  
-  <div>
-    <label for="link_description">Descripción</label>
-    <input type="text" name="link_description" id="link_description" placeholder="Introduce la descripción">
-  </div>
-  
+
+  <!-- Anidar los campos del enlace dentro del formulario de categoría -->
+  <%= form.fields_for :links do |link_form| %>
+    <div>
+      <%= link_form.label :url, "URL del Enlace" %>
+      <%= link_form.text_field :url, placeholder: "Introduce el URL" %>
+    </div>
+    <div>
+      <%= link_form.label :description, "Descripción del Enlace" %>
+      <%= link_form.text_field :description, placeholder: "Introduce la descripción" %>
+    </div>
+  <% end %>
+
   <br />
-  <input type="submit" value="Crear Categoría">
-</form>
+  <%= form.submit "Crear Categoría" %>
+<% end %>
 
 <h2>Lista de Categorías</h2>
 <ul>
