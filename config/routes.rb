@@ -24,4 +24,6 @@ Rails.application.routes.draw do
     root to: redirect('/users/sign_in'), as: :unauthenticated_root
   end
 
+  # Ruta para iniciar el scraping
+  get 'start_scraping', to: 'scraping#start_scraping'
 end
