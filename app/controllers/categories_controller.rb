@@ -20,6 +20,12 @@ class CategoriesController < ApplicationController
   # GET /categories/1/edit
   def edit
   end
+  
+  def scrape
+    category = Category.find(params[:id])
+    ScrapingVenex.new(category).scrape_links
+    redirect_to category_path(category), notice: 'Scraping completado.'
+  end
 
   # POST /categories or /categories.json
   def create

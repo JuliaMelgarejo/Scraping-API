@@ -3,8 +3,8 @@ services:
   db:
     image: postgres
     environment:
-      POSTGRES_USER: mati
-      POSTGRES_PASSWORD: 1701
+      POSTGRES_USER: capi
+      POSTGRES_PASSWORD: 3464
     ports:
       - "5434:5432"
     volumes:
@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgres://mati:1701@db/myapp_development
+      DATABASE_URL: postgres://capi:3464@db/myapp_development
 
 volumes:
   gem_cache:

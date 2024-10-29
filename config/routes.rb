@@ -25,5 +25,14 @@ Rails.application.routes.draw do
   end
 
   # Ruta para iniciar el scraping
-  get 'start_scraping', to: 'scraping#start_scraping'
+  # config/routes.rb
+
+  resources :categories do
+    member do
+      get :scrape # Esto crea una ruta para /categories/:id/scrape
+    end
+  end
+  resources :products
+
+
 end

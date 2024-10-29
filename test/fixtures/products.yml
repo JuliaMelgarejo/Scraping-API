@@ -3,12 +3,12 @@
 one:
   name: MyString
 <<<<<<< HEAD
-  precio: 1.5
+  price: 1.5
   category: one
 
 two:
   name: MyString
-  precio: 1.5
+  price: 1.5
   category: two
 =======
   price: 9.99
