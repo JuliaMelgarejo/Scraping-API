@@ -28,6 +28,11 @@ gem "stimulus-rails"
 gem "jbuilder"
 gem "devise", "~> 4.9"
 
+
+gem 'jwt'
+gem 'bcrypt'
+gem 'rack-cors'
+gem 'active_model_serializers'
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
