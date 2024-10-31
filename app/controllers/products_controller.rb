@@ -1,11 +1,15 @@
 class ProductsController < ApplicationController
   before_action :authenticate_user!
-
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[show edit update destroy]
+  before_action :authorize_admin!, only: %i[new create edit update destroy]
 
   # GET /products or /products.json
   def index
-    @products = Product.all
+    if params[:category_id]
+      @products = Product.where(category_id: params[:category_id])
+    else
+      @products = Product.all
+    end
   end
 
   # GET /products/1 or /products/1.json
@@ -68,5 +72,11 @@ class ProductsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def product_params
       params.require(:product).permit(:name, :price, :category_id)
+    end
+
+    def authorize_admin!
+      unless current_user&.admin?
+        redirect_to products_path, alert: 'No tienes permiso para realizar esta acción.'
+      end
     end
 end

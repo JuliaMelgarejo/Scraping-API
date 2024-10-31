@@ -12,7 +12,7 @@ class AdminCategoriesController < ApplicationController
   def create
     @category = Category.new(category_params)
 
-    if category_params_valid? # Verifica la validez de los parámetros de la categoría
+    if category_params_valid?
       if @category.save
         # Llama al trabajo de scraping después de guardar la categoría
         GenericScrapingJob.perform_later(@category.id)
@@ -20,7 +20,7 @@ class AdminCategoriesController < ApplicationController
         flash[:notice] = 'La categoría se creó con éxito y se inició el scraping.'
         redirect_to admin_categories_path
       else
-        flash.now[:alert] = 'Error al crear la categoría.'
+        flash.now[:alert] = 'Error al crear la categoría. ' + @category.errors.full_messages.to_sentence
         render :index
       end
     else
@@ -34,7 +34,7 @@ class AdminCategoriesController < ApplicationController
       flash[:notice] = 'La categoría se actualizó con éxito.'
       redirect_to admin_categories_path
     else
-      flash.now[:alert] = 'Error al actualizar la categoría.'
+      flash.now[:alert] = 'Error al actualizar la categoría. ' + @category.errors.full_messages.to_sentence
       render :edit
     end
   end
@@ -67,10 +67,7 @@ class AdminCategoriesController < ApplicationController
     return false unless links_attributes
 
     # Verifica si al menos uno de los enlaces tiene una URL válida
-    links_attributes.values.any? do |link|
-      url = link[:url]
-      valid_url?(url)
-    end
+    links_attributes.values.any? { |link| valid_url?(link[:url]) }
   end
 
   # Método para validar la URL
