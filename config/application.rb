@@ -16,6 +16,17 @@ module App
     $redis = Redis.new(url: 'redis://localhost:6380') # o 6380 si cambiaste el puerto
 
     # Configuration for the application, engines, and railties goes here.
+    
+    Rails.application.config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+
+        resource '*',
+          headers: :any,
+          methods: [:get, :post, :put, :patch, :delete, :options, :head],
+          expose: ["authorization"]
+      end
+    end
     #
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.

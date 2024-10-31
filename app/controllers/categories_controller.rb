@@ -4,7 +4,7 @@ class CategoriesController < ApplicationController
 
   # GET /categories or /categories.json
   def index
-    #current_user.admin!
+    current_user.admin!
     @categories = Category.all
   end
 

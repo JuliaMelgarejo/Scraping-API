@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_request
   before_action :set_user, only: %i[ show edit update destroy ]
 
   # GET /users or /users.json
@@ -9,7 +9,7 @@ class UsersController < ApplicationController
 
   # GET /users/1 or /users/1.json
   def show
-    render json: @users, status: :ok 
+    render json: @user, status: :ok 
   end
 
   # GET /users/new
@@ -67,6 +67,8 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:userName, :mail, :password)
+      params.require(:user).permit(:userName, :mail, :password, :password_confirmation)
     end
 end
+private
+

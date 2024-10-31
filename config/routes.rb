@@ -15,6 +15,10 @@ Rails.application.routes.draw do
   
   resources :admin_categories, only: [:index, :create, :update, :destroy]
   resources :admin, only: [:index, :create, :update, :destroy]
+  
+  post "/users", to: "users#create"
+  get "/me", to: "users#me"
+  post "/auth/login", to: "auth#login"
 
   authenticated :user do
     root to: redirect('/categories'), as: :authenticated_root

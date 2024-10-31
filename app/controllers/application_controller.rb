@@ -1,18 +1,34 @@
-class ApplicationController < ActionController::Base
-  # def after_sign_in_path_for(resource)
-  #   categories_path # O la ruta que apunta a la vista de categorías
-  # end
+class ApplicationController < ActionController::API
   include JsonWebToken
 
-  before_action :authentication_request
+  before_action :authenticate_request
+
+  skip_before_action :authenticate_request, if: :devise_controller?
+
+
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:mail, :password, :password_confirmation])
+  end
 
   private
 
-   def authentication_request
-      header = request.headers['Authorization']
-      header = header.split(' ').last if header
-      decoded = jwt_decode(header)
-      @current_user_id = User.find(decoded[:user_id])
-   end
-   
+    def authenticate_request
+      token = request.headers['Authorization']&.split(' ')&.last
+      if token.nil?
+        render json: { error: 'Token no proporcionado' }, status: :unauthorized
+        return
+      end
+
+      decoded_token = jwt_decode(token)
+      if decoded_token && decoded_token[:user_id]
+        @current_user = User.find(decoded_token[:user_id])
+      else
+        render json: { error: 'Token inválido' }, status: :unauthorized
+      end
+    end
+  
 end
