@@ -6,17 +6,18 @@ Rails.application.routes.draw do
   resources :notifications
   resources :price_histories
   resources :products
-  resources :categories, only: [:index, :show]
   resources :users
 
- 
-  get 'admin/categories', to: 'admin_categories#index', as: :categories_panel
-
-  
-  resources :admin_categories, only: [:index, :create, :update, :destroy]
-  resources :admin, only: [:index, :create, :update, :destroy]
-
   authenticated :user do
+    resources :categories do
+      member do
+        get :scrape # Ruta para el scraping
+      end
+
+      # Rutas anidadas para productos, accesibles solo por usuarios autenticados
+      resources :products, only: [:index] # Esto crea la ruta /categories/:category_id/products
+    end
+
     root to: redirect('/categories'), as: :authenticated_root
   end
 
@@ -24,15 +25,8 @@ Rails.application.routes.draw do
     root to: redirect('/users/sign_in'), as: :unauthenticated_root
   end
 
-  # Ruta para iniciar el scraping
-  # config/routes.rb
+  get 'admin/categories', to: 'admin_categories#index', as: :categories_panel
 
-  resources :categories do
-    member do
-      get :scrape # Esto crea una ruta para /categories/:id/scrape
-    end
-  end
-  resources :products
-
-
+  resources :admin_categories, only: [:index, :create, :update, :destroy]
+  resources :admin, only: [:index, :create, :update, :destroy]
 end
