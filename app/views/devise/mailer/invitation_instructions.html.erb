@@ -1,0 +1,9 @@
+<p>¡Te han invitado a unirte a nuestra plataforma!</p>
+
+<p>Para aceptar la invitación, haz clic en el siguiente enlace:</p>
+
+<p><%= link_to 'Aceptar invitación', accept_user_invitation_url(invitation_token: @token) %></p>
+
+<p>Gracias y esperamos que lo disfrutes.</p>
+
+<p><%= t("devise.mailer.invitation_instructions.someone_invited_you", url: "http://localhost:5000/") %></p>

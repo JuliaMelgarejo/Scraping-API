@@ -15,5 +15,5 @@
  <%= link_to "Panel Users", users_panel_path if current_user.admin? %>
  <%= link_to "Panel Categories", categories_panel_path if current_user.admin?  %>
 <% end %>
-
+<%= link_to "Invitar usuario", new_user_invitation_path, class: 'btn btn-danger' %>
 <%= link_to "Cerrar sesión", destroy_user_session_path, data: { turbo_method: :delete} , class: 'btn btn-danger' %>
