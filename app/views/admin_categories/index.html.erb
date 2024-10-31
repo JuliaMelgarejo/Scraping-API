@@ -6,7 +6,6 @@
     <%= form.text_field :name, placeholder: "Introduce el nombre" %>
   </div>
 
-  <!-- Anidar los campos del enlace dentro del formulario de categoría -->
   <%= form.fields_for :links do |link_form| %>
     <div>
       <%= link_form.label :url, "URL del Enlace" %>
@@ -24,20 +23,23 @@
 
 <h2>Lista de Categorías</h2>
 <ul>
-  <% @categories.each do |category| %>
-    <li>
-      <strong><%= category.name %></strong>
-      <% if category.links.any? %>
-        <ul>
-          <% category.links.each do |link| %>
-            <li><%= link.url %> - <%= link.description %></li>
-          <% end %>
-        </ul>
-      <% else %>
-        <span>No hay links asociados.</span>
-      <% end %>
-      <%= button_to 'Eliminar Categoría', admin_category_path(category), method: :delete  %>
-    </li>
+  <% if @categories.present? %>
+    <% @categories.each do |category| %>
+      <li>
+        <strong><%= category.name %></strong>
+        <% if category.links.any? %>
+          <ul>
+            <% category.links.each do |link| %>
+              <li><%= link.url %> - <%= link.description %></li>
+            <% end %>
+          </ul>
+        <% else %>
+          <span>No hay links asociados.</span>
+        <% end %>
+        <%= button_to 'Eliminar Categoría', admin_category_path(category), method: :delete %>
+      </li>
+    <% end %>
+  <% else %>
+    <li>No hay categorías disponibles.</li>
   <% end %>
 </ul>
-

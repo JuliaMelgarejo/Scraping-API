@@ -1,10 +1,9 @@
 class CategoriesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_category, only: %i[ show edit update destroy ]
+  before_action :set_category, only: %i[show edit update destroy]
 
   # GET /categories or /categories.json
   def index
-    #current_user.admin!
     @categories = Category.all
   end
 
@@ -23,7 +22,18 @@ class CategoriesController < ApplicationController
   
   def scrape
     category = Category.find(params[:id])
-    ScrapingVenex.new(category).scrape_links
+    links = category.links
+
+    links.each do |link|
+      if link.url.include?("hardcorecomputacion")
+        ScrapingHardcoreComputacion.new(category).scrape_links
+      elsif link.url.include?("venex")
+        ScrapingVenex.new(category).scrape_links
+      else
+        puts "No scraper available for URL: #{link.url}"
+      end
+    end
+
     redirect_to category_path(category), notice: 'Scraping completado.'
   end
 
@@ -66,13 +76,14 @@ class CategoriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_category
-      @category = Category.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def category_params
-      params.require(:category).permit(:name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_category
+    @category = Category.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def category_params
+    params.require(:category).permit(:name)
+  end
 end
