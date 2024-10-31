@@ -16,19 +16,14 @@ class ApplicationController < ActionController::API
 
   private
 
-    def authenticate_request
-      token = request.headers['Authorization']&.split(' ')&.last
-      if token.nil?
-        render json: { error: 'Token no proporcionado' }, status: :unauthorized
-        return
-      end
+  def authenticate_request
+    header = request.headers['Authorization']
+    token = header.split(' ').last if header
+    decoded = JsonWebToken.decode(token)
 
-      decoded_token = jwt_decode(token)
-      if decoded_token && decoded_token[:user_id]
-        @current_user = User.find(decoded_token[:user_id])
-      else
-        render json: { error: 'Token inválido' }, status: :unauthorized
-      end
-    end
-  
+    @current_user = User.find_by(id: decoded[:user_id]) if decoded
+  rescue ActiveRecord::RecordNotFound, JWT::DecodeError
+    render json: { errors: 'Unauthorized' }, status: :unauthorized
+  end
+
 end
