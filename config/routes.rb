@@ -1,32 +1,37 @@
 Rails.application.routes.draw do
-  # Rutas de paneles de administración
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
   get 'users', to: 'admin#index', as: :users_panel
-  get 'admin/categories', to: 'admin_categories#index', as: :categories_panel
-  resources :admin, only: [:index, :create, :update, :destroy]
-  resources :admin_categories, only: [:index, :create, :update, :destroy]
-
-  # Rutas de Devise y autenticación
-  devise_for :users
-  post 'login', to: 'users#login'
-
-  # Rutas de recursos
-  resources :users, except: [:new, :edit] # Para autenticación JWT
+  devise_for :users, controllers: { invitations: 'devise/invitations' }
   resources :links
   resources :subscriptions
   resources :notifications
   resources :price_histories
   resources :products
-  resources :categories, only: [:index, :show] do
-    member do
-      get :scrape # Para /categories/:id/scrape
-    end
-  end
+  resources :users
 
-  # Redirecciones de rutas raíz según autenticación
+  devise_for :users
+  post 'login', to: 'users#login'
+
   authenticated :user do
+    resources :categories do
+      member do
+        get :scrape # Ruta para el scraping
+      end
+
+      # Rutas anidadas para productos, accesibles solo por usuarios autenticados
+      resources :products, only: [:index] # Esto crea la ruta /categories/:category_id/products
+    end
+
     root to: redirect('/categories'), as: :authenticated_root
   end
+
   unauthenticated do
     root to: redirect('/users/sign_in'), as: :unauthenticated_root
   end
+
+  get 'admin/categories', to: 'admin_categories#index', as: :categories_panel
+
+  resources :admin_categories, only: [:index, :create, :update, :destroy]
+  resources :admin, only: [:index, :create, :update, :destroy]
 end

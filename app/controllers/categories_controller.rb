@@ -1,15 +1,17 @@
 class CategoriesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_category, only: %i[ show edit update destroy ]
+  before_action :set_category, only: %i[show edit update destroy]
+  before_action :authorize_admin!, only: %i[show edit update destroy]
 
   # GET /categories or /categories.json
   def index
-    current_user.admin!
+    #current_user.admin!
     @categories = Category.all
   end
 
   # GET /categories/1 or /categories/1.json
   def show
+    @products = @category.products
   end
 
   # GET /categories/new
@@ -21,18 +23,13 @@ class CategoriesController < ApplicationController
   def edit
   end
   
-  def scrape
-    category = Category.find(params[:id])
-    ScrapingVenex.new(category).scrape_links
-    redirect_to category_path(category), notice: 'Scraping completado.'
-  end
-
   # POST /categories or /categories.json
   def create
     @category = Category.new(category_params)
 
     respond_to do |format|
       if @category.save
+        scrape(@category) # Llamar al método de scraping después de crear la categoría
         format.html { redirect_to @category, notice: "Category was successfully created." }
         format.json { render :show, status: :created, location: @category }
       else
@@ -66,13 +63,41 @@ class CategoriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_category
-      @category = Category.find(params[:id])
+
+  def set_category
+    @category = Category.find(params[:id])
+  end
+
+  def authorize_admin!
+    unless current_user.admin?
+      redirect_to categories_path, alert: 'Acceso denegado. Solo administradores pueden acceder a esta sección.'
+    end
+  end
+
+  def category_params
+    params.require(:category).permit(:name)
+  end
+
+  # Método para realizar el scraping
+  def scrape(category)
+    links = category.links
+
+    if links.empty?
+      puts "No hay enlaces disponibles para la categoría #{category.id}."
+      return
     end
 
-    # Only allow a list of trusted parameters through.
-    def category_params
-      params.require(:category).permit(:name)
+    links.each do |link|
+      puts "Scraping enlace: #{link.url}" # Mensaje de depuración
+      if link.url.include?("hardcorecomputacion")
+        ScrapingHardcoreComputacion.new(category).scrape_links
+      elsif link.url.include?("venex")
+        ScrapingVenex.new(category).scrape_links
+      else
+        puts "No scraper available for URL: #{link.url}"
+      end
     end
+
+    puts "Scraping completado para la categoría #{category.id}." # Mensaje de finalización
+  end
 end

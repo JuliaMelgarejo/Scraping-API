@@ -1,19 +1,21 @@
 <p style="color: green"><%= notice %></p>
 
+<% if user_signed_in? %>
+  <% if current_user.admin? %>
+    <%= link_to "Panel Users", users_panel_path, class: 'btn btn-primary' %>
+    <%= link_to "Panel Categories", categories_panel_path, class: 'btn btn-secondary' %>
+  <% end %>
+  <%= link_to "Invitar usuario", new_user_invitation_path, class: 'btn btn-danger' %>
+  <%= link_to "Cerrar sesión", destroy_user_session_path, data: { turbo_method: :delete }, class: 'btn btn-danger' %>
+<% end %>
+
 <h1>Categories</h1>
 
-<div id="categories">
+<div id="categories" style="margin-top: 20px;">
   <% @categories.each do |category| %>
-    <%= render category %>
-    <p>
-      <%# <%= link_to "Show this category", category %> 
-    </p>
+    <div class="category-item" style="margin-bottom: 10px;">
+      <%= link_to category.name, category_products_path(category), class: "category-link" %>
+    </div>
   <% end %>
 </div>
 
-<% if user_signed_in?%>
- <%= link_to "Panel Users", users_panel_path if current_user.admin? %>
- <%= link_to "Panel Categories", categories_panel_path if current_user.admin?  %>
-<% end %>
-
-<%= link_to "Cerrar sesión", destroy_user_session_path, data: { turbo_method: :delete} , class: 'btn btn-danger' %>

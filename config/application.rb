@@ -13,7 +13,8 @@ module App
 
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
-    $redis = Redis.new(url: 'redis://localhost:6380') # o 6380 si cambiaste el puerto
+    #$redis = Redis.new(url: 'redis://localhost:6379') # o 6379 si cambiaste el puerto
+    $redis = Redis.new(url: 'redis://redis:6379') # Cambia localhost a redis
 
     # Configuration for the application, engines, and railties goes here.
     

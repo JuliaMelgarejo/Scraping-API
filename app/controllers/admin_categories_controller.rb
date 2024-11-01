@@ -11,12 +11,20 @@ class AdminCategoriesController < ApplicationController
 
   def create
     @category = Category.new(category_params)
-    
-    if @category.save
-      flash[:notice] = 'La categoría se creó con éxito.'
-      redirect_to admin_categories_path
+
+    if category_params_valid?
+      if @category.save
+        # Llama al trabajo de scraping después de guardar la categoría
+        GenericScrapingJob.perform_later(@category.id)
+
+        flash[:notice] = 'La categoría se creó con éxito y se inició el scraping.'
+        redirect_to admin_categories_path
+      else
+        flash.now[:alert] = 'Error al crear la categoría. ' + @category.errors.full_messages.to_sentence
+        render :index
+      end
     else
-      flash.now[:alert] = 'Error al crear la categoría.'
+      flash.now[:alert] = 'Al menos un enlace debe ser de "venex.com.ar" o "hardcorecomputacion.com".'
       render :index
     end
   end
@@ -26,7 +34,7 @@ class AdminCategoriesController < ApplicationController
       flash[:notice] = 'La categoría se actualizó con éxito.'
       redirect_to admin_categories_path
     else
-      flash.now[:alert] = 'Error al actualizar la categoría.'
+      flash.now[:alert] = 'Error al actualizar la categoría. ' + @category.errors.full_messages.to_sentence
       render :edit
     end
   end
@@ -49,5 +57,27 @@ class AdminCategoriesController < ApplicationController
 
   def category_params
     params.require(:category).permit(:name, links_attributes: [:url, :description])
+  end
+
+  # Método para validar los parámetros de la categoría
+  def category_params_valid?
+    links_attributes = params.dig(:category, :links_attributes)
+
+    # Solo continúa si hay enlaces presentes
+    return false unless links_attributes
+
+    # Verifica si al menos uno de los enlaces tiene una URL válida
+    links_attributes.values.any? { |link| valid_url?(link[:url]) }
+  end
+
+  # Método para validar la URL
+  def valid_url?(url)
+    # Define tus patrones de URL válidos
+    valid_patterns = [
+      /venex\.com\.ar/,
+      /hardcorecomputacion\.com/
+    ]
+    
+    valid_patterns.any? { |pattern| url =~ pattern }
   end
 end
