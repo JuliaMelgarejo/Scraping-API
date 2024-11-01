@@ -3,8 +3,8 @@ Rails.application.routes.draw do
 
   get 'users', to: 'admin#index', as: :users_panel
   devise_for :users, controllers: { invitations: 'devise/invitations' }
+  
   resources :links
-  resources :subscriptions
   resources :notifications
   resources :price_histories
   resources :products
@@ -14,11 +14,14 @@ Rails.application.routes.draw do
     resources :categories do
       member do
         get :scrape # Ruta para el scraping
+        post :subscribe, to: 'subscriptions#subscribe' # Ruta para la suscripción
       end
 
       # Rutas anidadas para productos, accesibles solo por usuarios autenticados
       resources :products, only: [:index] # Esto crea la ruta /categories/:category_id/products
     end
+
+    resources :subscriptions # Asegúrate de que existan rutas para suscripciones
 
     root to: redirect('/categories'), as: :authenticated_root
   end

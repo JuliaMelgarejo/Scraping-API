@@ -5,17 +5,24 @@
     <%= link_to "Panel Users", users_panel_path, class: 'btn btn-primary' %>
     <%= link_to "Panel Categories", categories_panel_path, class: 'btn btn-secondary' %>
   <% end %>
-  <%= link_to "Invitar usuario", new_user_invitation_path, class: 'btn btn-danger' %>
   <%= link_to "Cerrar sesión", destroy_user_session_path, data: { turbo_method: :delete }, class: 'btn btn-danger' %>
+ <%#= link_to 'Ver mis suscripciones', subscriptions_path, class: 'btn btn-info' %> <!-- Enlace para ver las suscripciones --> 
 <% end %>
 
-<h1>Categories</h1>
+<h1>Categorías</h1>
 
 <div id="categories" style="margin-top: 20px;">
   <% @categories.each do |category| %>
     <div class="category-item" style="margin-bottom: 10px;">
       <%= link_to category.name, category_products_path(category), class: "category-link" %>
+      
+      <% if user_signed_in? %>
+        <% if current_user.subscriptions.exists?(category: category) %>
+          <p style="color: blue;">Ya estás suscrito a esta categoría</p>
+        <% else %>
+          <%= button_to 'Suscribirse', subscribe_category_path(category), method: :post, class: 'btn btn-primary' %>
+        <% end %>
+      <% end %>
     </div>
   <% end %>
 </div>
-
