@@ -68,7 +68,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_31_183837) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "userName", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.datetime "reset_password_sent_at"
@@ -85,11 +84,9 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_31_183837) do
     t.string "invited_by_type"
     t.bigint "invited_by_id"
     t.integer "invitations_count", default: 0
-    t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["invited_by_id"], name: "index_users_on_invited_by_id"
     t.index ["invited_by_type", "invited_by_id"], name: "index_users_on_invited_by"
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "links", "categories"

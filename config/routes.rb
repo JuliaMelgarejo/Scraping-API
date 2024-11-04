@@ -2,16 +2,14 @@ Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
   get 'users', to: 'admin#index', as: :users_panel
-  devise_for :users, controllers: { invitations: 'devise/invitations' }
+  devise_for :users, controllers: { invitations: 'devise/invitations' } 
+  
   resources :links
   resources :subscriptions
   resources :notifications
   resources :price_histories
   resources :products
   resources :users
-
-  devise_for :users
-  post 'login', to: 'users#login'
 
   authenticated :user do
     resources :categories do

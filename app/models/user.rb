@@ -8,7 +8,6 @@ class User < ApplicationRecord
   has_many :notifications
 
   validates :email, presence: true, uniqueness: true
-  validates :userName, presence: true, uniqueness: true
   validates :password, presence: true, length: { minimum: 6 }, on: :create 
 
 end
