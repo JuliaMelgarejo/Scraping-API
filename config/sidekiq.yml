@@ -1,3 +1,8 @@
 :concurrency: 5
 :queues:
   - default
+
+:cron:
+  generic_scraping_job:
+    cron: "0 */2 * * *"  
+    class: "GenericScrapingJob" 
