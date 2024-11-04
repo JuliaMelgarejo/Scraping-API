@@ -1,0 +1,46 @@
+<%# app/views/categories/show.html.erb %>
+
+<p style="color: green"><%= notice %></p>
+
+<h1><%= @category.name %></h1>
+
+<%# Enlace para iniciar el scraping %>
+<div>
+  <%= link_to 'Iniciar Scraping', scrape_category_path(@category), method: :get, data: { confirm: '¿Estás seguro de que deseas iniciar el scraping?' } %>
+</div>
+
+<%# Mostrar los enlaces asociados a la categoría %>
+<h2>Enlaces Asociados</h2>
+<% if @category.links.any? %>
+  <ul>
+    <% @category.links.each do |link| %>
+      <li>
+        <%= link_to link.url, link.url, target: "_blank" %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No hay enlaces asociados a esta categoría.</p>
+<% end %>
+
+<%# Mostrar los productos asociados a la categoría %>
+<h2>Productos Asociados</h2>
+<% if @category.products.any? %>
+  <ul>
+    <% @category.products.each do |product| %>
+      <li>
+        <%= link_to product.name, product_path(product) %> - price: <%= product.price %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No hay productos asociados a esta categoría.</p>
+<% end %>
+
+<%# Opcional: Enlaces para editar o eliminar la categoría %>
+<div>
+  <%= link_to "Edit this category", edit_category_path(@category) %> |
+  <%= link_to "Back to categories", categories_path %>
+
+  <%= button_to "Destroy this category", @category, method: :delete %>
+</div>

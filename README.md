@@ -1,4 +1,4 @@
-# Proyecto Final Bootcamp Backend 2024 - WebExperto
+# README
 
 ## Descripción del Proyecto
 
@@ -25,7 +25,17 @@ Este proyecto es el resultado final del Bootcamp de Backend 2024, donde hemos de
    - Almacenamiento en base de datos, manteniendo un histórico de precios.
    - Detección de oportunidades de rebajas y notificación a los usuarios suscritos.
 
+<<<<<<< HEAD
 3. **API RESTful**:
    - Autenticación de usuarios mediante JWT.
    - Endpoints para listar categorías, y suscribirse/desuscribirse a ellas.
    - Notificaciones en tiempo real a través de WebSockets cuando se detectan oportunidades de compra.
+=======
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
+>>>>>>> temp-branch

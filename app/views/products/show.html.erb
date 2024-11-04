@@ -1,0 +1,7 @@
+<h1><%= @product.name %></h1>
+<p>Precio: <%= @product.price %></p>
+
+<% if user_signed_in? && current_user.admin? %>
+  <%= link_to 'Editar', edit_product_path(@product) %>
+  <%= link_to 'Eliminar', @product, method: :delete, data: { turbo_method: :delete }, class: "btn btn-danger" %>
+<% end %>
