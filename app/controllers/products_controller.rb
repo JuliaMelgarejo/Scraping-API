@@ -44,6 +44,14 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
+        # Emitir una notificación a los usuarios suscritos a la categoría
+        ActionCable.server.broadcast(
+          "notifications_#{@product.category_id}",
+          {
+            message: "El precio del producto '#{@product.name}' ha cambiado a #{@product.price}.",
+            product_id: @product.id
+          }
+        )
         format.html { redirect_to @product, notice: "Product was successfully updated." }
         format.json { render :show, status: :ok, location: @product }
       else
@@ -62,6 +70,15 @@ class ProductsController < ApplicationController
       format.json { head :no_content }
     end
   end
+  
+  # Agrega esta acción en el ProductsController
+
+  def send_test_notification
+    ActionCable.server.broadcast "notifications_#{params[:id]}", message: "¡Notificación de prueba para la categoría #{params[:id]}!"
+    head :ok # Devuelve un código 200 OK
+  end
+  
+
 
   private
     # Use callbacks to share common setup or constraints between actions.

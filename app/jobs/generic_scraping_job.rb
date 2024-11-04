@@ -19,9 +19,9 @@ class GenericScrapingJob < ApplicationJob
       if valid_url?(link.url)
         case link.url
         when /venex\.com\.ar/
-          ScrapingVenexJob.perform_later(category.id) # Llama al scraping de Venex
+          ScrapingVenexJob.perform_later(category.id)
         when /hardcorecomputacion\.com/
-          ScrapingHardcoreComputacionJob.perform_later(category.id) # Llama al scraping de Hardcore Computación
+          ScrapingHardcoreComputacionJob.perform_later(category.id) 
         end
       else
         Rails.logger.warn("URL no válida: #{link.url}. No se realizará scraping.")
