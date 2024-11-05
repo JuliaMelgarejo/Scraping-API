@@ -42,4 +42,12 @@ Rails.application.routes.draw do
   unauthenticated do
     root to: redirect('/users/sign_in'), as: :unauthenticated_root
   end
+  namespace :api do
+      post 'auth/register', to: 'api_user#register'
+      post 'auth/login', to: 'api_user#login'
+      put 'auth/subscription', to: 'api_user#subscription'
+      get 'auth/subscription', to: 'api_user#subscription'
+      delete 'auth/subscription', to: 'api_user#unsubscription'
+      get 'auth/mysubscriptions', to: 'api_user#mysubscriptions'
+    end
 end
