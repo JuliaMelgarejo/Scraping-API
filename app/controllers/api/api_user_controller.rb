@@ -46,30 +46,52 @@ module Api
         render json: { subscribed_categories: subscribed_categories }, status: :ok
       end
 
-      # PUT /auth/subscription
-      def subscription
-        # Verificamos que @current_user esté asignado después de la autenticación
-        if @current_user.nil?
-          return render json: { error: "Usuario no autenticado" }, status: :unauthorized
-        end
-      
-        category_ids = params[:category_ids]
-        if category_ids.blank?
-          return render json: { error: "No se proporcionaron categorías para suscribirse" }, status: :bad_request
-        end
-      
-        categories = Category.where(id: category_ids)
-        if categories.empty?
-          return render json: { error: "Las categorías especificadas no existen" }, status: :not_found
-        end
-      
-        # Crear o actualizar las suscripciones del usuario actual
-        categories.each do |category|
-          @current_user.subscriptions.find_or_create_by(category: category)
-        end
-      
-        render json: { message: "Suscripción actualizada con éxito", subscribed_categories: @current_user.categories }, status: :ok
+     # PUT /auth/subscription
+    def subscription
+      # Verificamos que @current_user esté asignado después de la autenticación
+      if @current_user.nil?
+        return render json: { error: "Usuario no autenticado" }, status: :unauthorized
       end
+
+      category_ids = params[:category_ids]
+      if category_ids.blank?
+        return render json: { error: "No se proporcionaron categorías para suscribirse" }, status: :bad_request
+      end
+
+      categories = Category.where(id: category_ids)
+      if categories.empty?
+        return render json: { error: "Las categorías especificadas no existen" }, status: :not_found
+      end
+
+      # Crear o actualizar las suscripciones del usuario actual
+      categories.each do |category|
+        @current_user.subscriptions.find_or_create_by(category: category)
+      end
+
+      # WebSocket URL para suscripciones (ahora en localhost:5000)
+      ws_url = "ws://localhost:5000/cable"
+      subscription_requests = categories.map do |category|
+        {
+          category_id: category.id,
+          request_body: {
+            command: "subscribe",
+            identifier: {
+              channel: "NotificationsChannel",
+              category_id: category.id
+            }.to_json
+          }
+        }
+      end
+
+      # Responder con mensaje de éxito y detalles de las categorías suscritas
+      render json: {
+        message: "Suscripción actualizada con éxito",
+        websocket_url: ws_url,
+        subscriptions: subscription_requests,
+        subscribed_categories: @current_user.categories
+      }, status: :ok
+    end
+
 
     # DELETE /auth/subscription
     def unsubscription

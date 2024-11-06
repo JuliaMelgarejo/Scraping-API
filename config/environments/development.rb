@@ -2,6 +2,10 @@ require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  config.web_console.permissions = '172.18.0.1'
+  config.action_cable.url = "ws://localhost:5000/cable"
+  config.action_cable.allowed_request_origins = [ "http://localhost:5000", /http:\/\/(.*)\.ngrok\.io/] # Permitir también localhost o ngrok
+  config.action_cable.disable_request_forgery_protection = true
   config.action_mailer.default_url_options = { host: 'localhost', port: 5000 }
   # In the development environment your application's code is reloaded any time
   # it changes. This slows down response time but is perfect for development
@@ -64,10 +68,13 @@ Rails.application.configure do
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
-
+  
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+   
+  # Configuración de Action Cable para aceptar solicitudes desde cualquier origen en desarrollo
+
 end

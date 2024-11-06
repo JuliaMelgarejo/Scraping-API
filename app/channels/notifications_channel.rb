@@ -1,10 +1,14 @@
 class NotificationsChannel < ApplicationCable::Channel
   def subscribed
-    # Se suscribe al canal de notificaciones basado en la categoría
-    stream_from "notifications_#{params[:category_id]}"
+    stream_for "notifications_1"  # Canal al que están suscritos los usuarios
   end
 
   def unsubscribed
-    # Any cleanup needed when channel is unsubscribed
+    # Código para manejar cuando el usuario se desuscribe (si es necesario)
+  end
+
+  def receive(data)
+    # Aquí recibimos el mensaje del cliente y lo enviamos a todos los suscriptores
+    ActionCable.server.broadcast("notifications_1", message: data['message'])
   end
 end

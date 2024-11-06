@@ -1,5 +1,5 @@
 class PriceHistoriesController < ApplicationController
-  before_action :set_price_history, only: %i[ show edit update destroy ]
+  before_action :set_price_history, only: %i[show edit update destroy]
 
   # GET /price_histories or /price_histories.json
   def index
@@ -58,13 +58,12 @@ class PriceHistoriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+
     def set_price_history
       @price_history = PriceHistory.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def price_history_params
-      params.require(:price_history).permit(:datte, :price, :product_id)
+      params.require(:price_history).permit(:date, :price, :product_id)
     end
 end
