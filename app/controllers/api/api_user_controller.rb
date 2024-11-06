@@ -1,7 +1,7 @@
 module Api
   class ApiUserController < ApplicationController
   protect_from_forgery with: :null_session
-  before_action :authenticate_request, only: [:subscription, :unsubscription, :mysubscriptions]
+  before_action :authenticate_request, only: [:subscription, :unsubscription, :mysubscriptions, :user_subscriptions]
 
       # POST /auth/register
       def register
@@ -32,30 +32,43 @@ module Api
         end
       end
 
+      # GET /auth/user_subscriptions
+      def user_subscriptions
+        # Verificamos que @current_user esté asignado después de la autenticación
+        if @current_user.nil?
+          return render json: { error: "Usuario no autenticado" }, status: :unauthorized
+        end
+      
+        
+        # Obtener las categorías a las que el usuario está suscrito
+        subscribed_categories = @current_user.categories
+      
+        render json: { subscribed_categories: subscribed_categories }, status: :ok
+      end
+
       # PUT /auth/subscription
       def subscription
         # Verificamos que @current_user esté asignado después de la autenticación
         if @current_user.nil?
           return render json: { error: "Usuario no autenticado" }, status: :unauthorized
         end
-
+      
         category_ids = params[:category_ids]
         if category_ids.blank?
           return render json: { error: "No se proporcionaron categorías para suscribirse" }, status: :bad_request
         end
-
+      
         categories = Category.where(id: category_ids)
         if categories.empty?
           return render json: { error: "Las categorías especificadas no existen" }, status: :not_found
         end
-
-        # Asigna las categorías al usuario actual
-        @current_user.categories = categories
-        if @current_user.save
-          render json: { message: "Suscripción actualizada con éxito", subscribed_categories: @current_user.categories }, status: :ok
-        else
-          render json: { errors: @current_user.errors.full_messages }, status: :unprocessable_entity
+      
+        # Crear o actualizar las suscripciones del usuario actual
+        categories.each do |category|
+          @current_user.subscriptions.find_or_create_by(category: category)
         end
+      
+        render json: { message: "Suscripción actualizada con éxito", subscribed_categories: @current_user.categories }, status: :ok
       end
 
     # DELETE /auth/subscription

@@ -6,5 +6,6 @@ class User < ApplicationRecord
   enum role: { standard: 0, admin: 1 }
   has_many :subscriptions
   has_many :notifications
+  has_many :categories, through: :subscriptions
 
 end
