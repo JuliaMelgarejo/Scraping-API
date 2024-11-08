@@ -1,0 +1,4 @@
+generic_scraping_job:
+  cron: "* * * * *"  # Cada 1 minuto
+  class: "GenericScrapingJob"
+  queue: default 

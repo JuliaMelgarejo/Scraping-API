@@ -88,3 +88,5 @@ class BaseScraper
     end
   end
 end
+
+

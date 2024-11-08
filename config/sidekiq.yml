@@ -2,7 +2,7 @@
 :queues:
   - default
 
-:cron:
-  generic_scraping_job:
-    cron: "0 */2 * * *"  
-    class: "GenericScrapingJob" 
+:redis:
+  url: <%= ENV['REDIS_URL'] || 'redis://localhost:6379/0' %>
+
+

@@ -56,7 +56,7 @@ gem 'httparty'  # Para realizar las peticiones HTTP
 gem 'sidekiq'   # Para manejar los jobs en background
 gem 'devise_invitable'
 gem 'sidekiq-cron'
-
+gem 'sidekiq-scheduler'
  
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
