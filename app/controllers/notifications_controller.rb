@@ -22,7 +22,6 @@ class NotificationsController < ApplicationController
   # POST /notifications or /notifications.json
   def create
     @notification = Notification.new(notification_params)
-
     respond_to do |format|
       if @notification.save
         format.html { redirect_to @notification, notice: "Notification was successfully created." }
@@ -50,20 +49,16 @@ class NotificationsController < ApplicationController
   # DELETE /notifications/1 or /notifications/1.json
   def destroy
     @notification.destroy
-
     respond_to do |format|
       format.html { redirect_to notifications_path, status: :see_other, notice: "Notification was successfully destroyed." }
       format.json { head :no_content }
     end
   end
-
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_notification
       @notification = Notification.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def notification_params
       params.require(:notification).permit(:staus, :message, :user_id, :product_id)
     end

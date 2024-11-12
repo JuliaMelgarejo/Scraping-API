@@ -22,7 +22,6 @@ class LinksController < ApplicationController
   # POST /links or /links.json
   def create
     @link = Link.new(link_params)
-
     respond_to do |format|
       if @link.save
         format.html { redirect_to @link, notice: "Link was successfully created." }
@@ -50,7 +49,6 @@ class LinksController < ApplicationController
   # DELETE /links/1 or /links/1.json
   def destroy
     @link.destroy
-
     respond_to do |format|
       format.html { redirect_to links_path, status: :see_other, notice: "Link was successfully destroyed." }
       format.json { head :no_content }
@@ -58,12 +56,10 @@ class LinksController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_link
       @link = Link.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def link_params
       params.require(:link).permit(:url, :description, :category_id)
     end

@@ -1,11 +1,9 @@
 <h1>Admin Categories</h1>
-
 <%= form_with model: @category, url: admin_categories_path, local: true do |form| %>
   <div>
     <%= form.label :name, "Nombre de la Categoría" %>
     <%= form.text_field :name, placeholder: "Introduce el nombre" %>
   </div>
-
   <%= form.fields_for :links do |link_form| %>
     <div>
       <%= link_form.label :url, "URL del Enlace" %>

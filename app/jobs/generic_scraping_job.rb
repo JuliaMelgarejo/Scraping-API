@@ -1,13 +1,11 @@
-# app/jobs/generic_scraping_job.rb
 class GenericScrapingJob < ApplicationJob
   queue_as :default
-
   VALID_URLS = [
     /venex\.com\.ar/,
     /hardcorecomputacion\.com/
   ]
 
-  def perform
+  def perform(_category_id = nil)
     Category.find_each do |category|
       category.links.each do |link|
         if valid_url?(link.url)
@@ -23,9 +21,7 @@ class GenericScrapingJob < ApplicationJob
       end
     end
   end
-
   private
-
   def valid_url?(url)
     VALID_URLS.any? { |pattern| url =~ pattern }
   end

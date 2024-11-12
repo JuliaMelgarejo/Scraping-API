@@ -1,7 +1,10 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   # Montar LetterOpener solo en el entorno de desarrollo
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
   mount ActionCable.server => '/cable'
+  mount Sidekiq::Web => '/sidekiq'
   # Rutas de administración
   get 'users', to: 'admin#index', as: :users_panel
   get 'admin/categories', to: 'admin_categories#index', as: :categories_panel

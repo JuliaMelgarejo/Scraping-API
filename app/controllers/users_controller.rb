@@ -4,7 +4,6 @@ class UsersController < ApplicationController
 
   def login
   user = User.find_by(email: params[:email])
-
   if user&.valid_password?(params[:password])
     token = JsonWebToken.encode(user_id: user.id)
     render json: { token: token }, status: :ok
@@ -33,7 +32,6 @@ class UsersController < ApplicationController
   # POST /users or /users.json
   def create
     @user = User.new(user_params)
-
     respond_to do |format|
       if @user.save
         format.html { redirect_to @user, notice: "User was successfully created." }
@@ -67,14 +65,11 @@ class UsersController < ApplicationController
       format.json { head :no_content }
     end
   end
-
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_user
       @user = User.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def user_params
       params.require(:user).permit(:userName, :email, :password)
     end

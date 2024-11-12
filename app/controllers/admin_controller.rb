@@ -23,7 +23,6 @@ class AdminController < ApplicationController
     redirect_to admin_index_path, alert: "Unable to delete User"
     end
   end
-
   private
 
   def authorize_admin!
@@ -33,10 +32,8 @@ class AdminController < ApplicationController
   def user_params
     params.require(:user).permit(:userName, :email, :password, :role)
   end
-  # Use callbacks to share common setup or constraints between actions.
+  
   def set_user
     @user = User.find(params[:id])
   end
-
-
 end

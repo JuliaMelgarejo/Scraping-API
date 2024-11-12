@@ -26,10 +26,9 @@ class CategoriesController < ApplicationController
   # POST /categories or /categories.json
   def create
     @category = Category.new(category_params)
-
     respond_to do |format|
       if @category.save
-        scrape(@category) # Llamar al método de scraping después de crear la categoría
+        scrape(@category) 
         format.html { redirect_to @category, notice: "Category was successfully created." }
         format.json { render :show, status: :created, location: @category }
       else
@@ -55,13 +54,11 @@ class CategoriesController < ApplicationController
   # DELETE /categories/1 or /categories/1.json
   def destroy
     @category.destroy
-
     respond_to do |format|
       format.html { redirect_to categories_path, status: :see_other, notice: "Category was successfully destroyed." }
       format.json { head :no_content }
     end
   end
-
   private
 
   def set_category
@@ -78,17 +75,14 @@ class CategoriesController < ApplicationController
     params.require(:category).permit(:name)
   end
 
-  # Método para realizar el scraping
   def scrape(category)
     links = category.links
-
     if links.empty?
       puts "No hay enlaces disponibles para la categoría #{category.id}."
       return
     end
-
     links.each do |link|
-      puts "Scraping enlace: #{link.url}" # Mensaje de depuración
+      puts "Scraping enlace: #{link.url}" 
       if link.url.include?("hardcorecomputacion")
         ScrapingHardcoreComputacion.new(category).scrape_links
       elsif link.url.include?("venex")
@@ -97,7 +91,6 @@ class CategoriesController < ApplicationController
         puts "No scraper available for URL: #{link.url}"
       end
     end
-
-    puts "Scraping completado para la categoría #{category.id}." # Mensaje de finalización
+    puts "Scraping completado para la categoría #{category.id}." 
   end
 end

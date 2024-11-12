@@ -28,7 +28,6 @@ class ProductsController < ApplicationController
   # POST /products or /products.json
   def create
     @product = Product.new(product_params)
-
     respond_to do |format|
       if @product.save
         format.html { redirect_to @product, notice: "Product was successfully created." }
@@ -44,7 +43,6 @@ class ProductsController < ApplicationController
   def update
     respond_to do |format|
       if @product.update(product_params)
-        # Emitir una notificación a los usuarios suscritos a la categoría
         ActionCable.server.broadcast(
           "notifications_#{@product.category_id}",
           {
@@ -71,22 +69,15 @@ class ProductsController < ApplicationController
     end
   end
   
-  # Agrega esta acción en el ProductsController
-
   def send_test_notification
     ActionCable.server.broadcast "notifications_#{params[:id]}", message: "¡Notificación de prueba para la categoría #{params[:id]}!"
-    head :ok # Devuelve un código 200 OK
+    head :ok 
   end
-  
-
-
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_product
       @product = Product.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def product_params
       params.require(:product).permit(:name, :price, :category_id)
     end

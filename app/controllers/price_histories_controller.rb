@@ -22,7 +22,6 @@ class PriceHistoriesController < ApplicationController
   # POST /price_histories or /price_histories.json
   def create
     @price_history = PriceHistory.new(price_history_params)
-
     respond_to do |format|
       if @price_history.save
         format.html { redirect_to @price_history, notice: "Price history was successfully created." }
@@ -50,13 +49,11 @@ class PriceHistoriesController < ApplicationController
   # DELETE /price_histories/1 or /price_histories/1.json
   def destroy
     @price_history.destroy
-
     respond_to do |format|
       format.html { redirect_to price_histories_path, status: :see_other, notice: "Price history was successfully destroyed." }
       format.json { head :no_content }
     end
   end
-
   private
 
     def set_price_history
