@@ -1,18 +1,16 @@
 import consumer from "./consumer";
 
-const channel = consumer.subscriptions.create("NotificationsChannel", {
+
+consumer.subscriptions.create("NotificationsChannel", {
   connected() {
-    console.log("Conectado al canal de notificaciones");
+    // Called when the subscription is ready for use on the server
   },
+
   disconnected() {
-    console.log("Desconectado del canal de notificaciones");
+    // Called when the subscription has been terminated by the server
   },
+
   received(data) {
-    console.log("Recibido por WebSocket:", data);
-    document.getElementById("messages").innerHTML += `<p>${data.message}</p>`;
+    // Called when there's incoming data on the websocket for this channel
   }
 });
-
-setInterval(() => {
-  channel.send({ message: "Mensaje enviado cada 5 segundos" });
-}, 5000);

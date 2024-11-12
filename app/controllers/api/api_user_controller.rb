@@ -33,8 +33,27 @@ before_action :authenticate_request, only: [:subscription, :unsubscription, :mys
       if @current_user.nil?
         return render json: { error: "Usuario no autenticado" }, status: :unauthorized
       end
-      subscribed_categories = @current_user.categories
-      render json: { subscribed_categories: subscribed_categories }, status: :ok
+
+      @categories = @current_user.categories
+
+      ws_url = "ws://localhost:5000/cable"
+      subscription_requests = @categories.map do |category|
+        {
+          category_id: category.id,
+          url: "#{ws_url}?category_id=#{category.id}",
+          request_body: {
+            command: "subscribe",
+            identifier: {
+              channel: "SubscriptionsChannel"
+            }.to_json
+          }
+        }
+      end
+
+      render json: {
+        message: "Conexión a los canales WebSocket de suscripciones del usuario.",
+        subscriptions: subscription_requests
+      }, status: :ok
     end
 
     # PUT /auth/subscription

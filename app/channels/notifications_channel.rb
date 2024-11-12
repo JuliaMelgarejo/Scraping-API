@@ -1,12 +1,11 @@
 class NotificationsChannel < ApplicationCable::Channel
   def subscribed
-    stream_for "notifications_1"
+   
+    stream_from "category_#{connection.category_id}"
+  
   end
 
   def unsubscribed
-  end
-
-  def receive(data)
-    ActionCable.server.broadcast("notifications_1", message: data['message'])
+   
   end
 end
