@@ -22,6 +22,7 @@ class SubscriptionsController < ApplicationController
 
   # POST /subscriptions or /subscriptions.json
   def create
+    respond_to do |format|
     @subscription = current_user.subscriptions.new(subscription_params)
       if @subscription.save
         format.html { redirect_to subscriptions_path, notice: "Te has suscrito a la categoría." }
