@@ -44,7 +44,7 @@ before_action :authenticate_request, only: [:subscription, :unsubscription, :mys
           request_body: {
             command: "subscribe",
             identifier: {
-              channel: "SubscriptionsChannel"
+              channel: "NotificationsChannel"
             }.to_json
           }
         }
