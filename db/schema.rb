@@ -30,7 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_31_183837) do
   end
 
   create_table "notifications", force: :cascade do |t|
-    t.string "staus"
+    t.integer "status", default: 0
     t.string "message"
     t.bigint "user_id", null: false
     t.bigint "product_id", null: false
@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_31_183837) do
     t.string "name"
     t.float "price"
     t.bigint "category_id", null: false
+    t.string "link"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_products_on_category_id"

@@ -36,6 +36,7 @@ class BaseScraper
   def process_product(product_data)
     product_name = product_data[:name]
     current_price = product_data[:price]
+    product_link = product_data[:link]  # Ahora capturamos el link
 
     existing_product = Product.find_by(name: product_name, category: @category)
     if existing_product
@@ -43,7 +44,7 @@ class BaseScraper
       if current_price != previous_price
         # Guardar el historial de precios
         PriceHistory.create!(product: existing_product, price: previous_price, date: Date.today)
-        existing_product.update!(price: current_price)
+        existing_product.update!(price: current_price, link: product_link)
         puts "Producto actualizado: #{existing_product.name}, precio anterior guardado en el histórico."
         
         # Calcular el descuento
@@ -55,12 +56,13 @@ class BaseScraper
         puts "El precio no ha cambiado para el producto: #{existing_product.name}"
       end
     else
-      product_record = Product.create!(name: product_name, price: current_price, category: @category)
+      product_record = Product.create!(name: product_name, price: current_price, category: @category, link: product_link)
       puts "Producto guardado: #{product_record.name} con ID #{product_record.id}"
     end
   end
 
   def calculate_discount(previous_price, current_price)
+    # Calcula el porcentaje de descuento
     ((previous_price - current_price).to_f / previous_price) * 100
   end
 
@@ -69,16 +71,41 @@ class BaseScraper
     ActionCable.server.broadcast(
       "category_#{@category.id}",  # Canal de WebSocket de la categoría
       {
-        message: "Descuento en #{product.name}!",
+        message: "¡Descuento en #{product.name}! El precio ha bajado #{discount_percentage.round(2)}%",
         discount_percentage: discount_percentage.round(2),
         new_price: product.price,
-        product_id: product.id
+        product_id: product.id,
+        link: product.link  # Incluimos el link en la notificación
       }
     )
 
     # Enviar notificación por correo electrónico a los usuarios suscritos
     @category.subscriptions.each do |subscription|
-      NotificationMailer.with(user: subscription.user, product: product, discount_percentage: discount_percentage).discount_email.deliver_later
+      begin
+        if subscription.user.present?
+          # Crear una notificación para guardar en la base de datos
+          notification = Notification.create!(
+            user: subscription.user,
+            product: product,
+            message: "¡Descuento en #{product.name} - #{discount_percentage.round(2)}% de descuento! Precio actualizado: #{product.price}",
+            status: 'no_enviado' # Inicialmente lo dejamos como pendiente
+          )
+          puts "Notificación pendiente para #{subscription.user.email} para el producto #{product.name}"
+
+          # Enviar correo de notificación
+          NotificationMailer.with(user: subscription.user, product: product, discount_percentage: discount_percentage).discount_email.deliver_later
+          
+          # Después de intentar enviar el correo, actualizamos el estado
+          notification.update!(status: 'enviado')
+          puts "Notificación enviada a #{subscription.user.email} para el producto #{product.name}"
+        else
+          puts "No se encontró usuario para la suscripción"
+        end
+      rescue => e
+        # Si ocurre un error al enviar el correo, actualizamos el estado a 'error'
+        puts "Error al enviar la notificación: #{e.message}"
+        notification.update!(status: 'error') if notification
+      end
     end
   end
 end

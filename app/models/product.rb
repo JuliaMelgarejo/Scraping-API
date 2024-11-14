@@ -6,7 +6,7 @@ class Product < ApplicationRecord
   def notify_price_change
     ActionCable.server.broadcast(
       "notifications_#{self.category_id}",
-      message: "El precio del producto '#{self.name}' ha cambiado a #{self.price}.",
+      message: "El precio del producto '#{self.name}', el link al producto: #{self.link}  ha cambiado a #{self.price}.",
       product_id: self.id
     )
   end

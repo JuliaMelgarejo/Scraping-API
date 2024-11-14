@@ -5,7 +5,7 @@ class NotificationMailer < ApplicationMailer
       @discount_percentage = params[:discount_percentage]
        mail(
         to: @user.email,
-        subject: "¡Descuento en #{@product.name} del #{@discount_percentage}%!"
+        subject: "¡Descuento en #{@product.name} del #{@discount_percentage}%!  Link del producto:#{@product.link}"
       )
   end
 end

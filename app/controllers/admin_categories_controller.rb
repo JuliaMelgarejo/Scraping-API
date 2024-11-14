@@ -12,14 +12,24 @@ class AdminCategoriesController < ApplicationController
   def create
     @category = Category.new(category_params)
     if category_params_valid?
-      if @category.save
-        GenericScrapingJob.perform_later(@category.id)
-        flash[:notice] = 'La categoría se creó con éxito y se inició el scraping.'
-        redirect_to admin_categories_path
+      existing_category = Category.find_by(name: @category.name.strip)
+      
+      if existing_category
+        # Si existe, solo agregamos el nuevo enlace
+        category_params[:links_attributes].each do |_, link_params|
+          existing_category.links.create(url: link_params[:url], description: link_params[:description])
+        end
+        flash[:notice] = 'Categoría existente. Se agregó un nuevo enlace a la categoría.'
       else
-        flash.now[:alert] = 'Error al crear la categoría. ' + @category.errors.full_messages.to_sentence
-        render :index
+        # Si no existe, creamos una nueva categoría
+        if @category.save
+          GenericScrapingJob.perform_later(@category.id)
+          flash[:notice] = 'La categoría se creó con éxito y se inició el scraping.'
+        else
+          flash.now[:alert] = 'Error al crear la categoría. ' + @category.errors.full_messages.to_sentence
+        end
       end
+      redirect_to admin_categories_path
     else
       flash.now[:alert] = 'Al menos un enlace debe ser de "venex.com.ar" o "hardcorecomputacion.com".'
       render :index
