@@ -4,7 +4,7 @@ class CategoriesController < ApplicationController
   before_action :authorize_admin!, only: %i[show edit update destroy]
 
   def index
-    current_user.admin!
+    ##current_user.admin!
     @categories = Category.all
   end
 

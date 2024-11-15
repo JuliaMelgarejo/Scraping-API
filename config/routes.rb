@@ -52,5 +52,6 @@ Rails.application.routes.draw do
       put 'auth/subscription', to: 'api_user#subscription'
       delete 'auth/subscription', to: 'api_user#unsubscription'
       get 'auth/mysubscriptions', to: 'api_user#mysubscriptions'
+      get 'auth/subscription_stats', to: 'api_user#subscription_stats'
     end
 end

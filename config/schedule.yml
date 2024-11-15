@@ -1,4 +1,11 @@
 generic_scraping_job:
-  cron: "* * * * *"  # Cada 1 minuto
+  cron: "0 0 */14 * *"  # Cada minuto
   class: "GenericScrapingJob"
-  queue: default 
+  queue: default
+
+cleanup_notifications_job:
+  cron: "* * * * *" # Cada 14 días a la medianoche
+  class: "CleanupNotificationsJob"
+  queue: default
+
+

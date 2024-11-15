@@ -1,7 +1,7 @@
 module Api
-class ApiUserController < ApplicationController
-protect_from_forgery with: :null_session
-before_action :authenticate_request, only: [:subscription, :unsubscription, :mysubscriptions, :user_subscriptions]
+  class ApiUserController < ApplicationController
+    protect_from_forgery with: :null_session
+    before_action :authenticate_request, only: [:subscription, :unsubscription, :mysubscriptions, :user_subscriptions, :subscription_stats]
 
     # POST /auth/register
     def register
@@ -18,7 +18,6 @@ before_action :authenticate_request, only: [:subscription, :unsubscription, :mys
 
     # POST /auth/login
     def login
-      puts params.inspect 
       @user = User.find_by(email: params[:email])
       if @user&.valid_password?(params[:password])
         token = JsonWebToken.jwt_encode(user_id: @user.id)
@@ -78,7 +77,7 @@ before_action :authenticate_request, only: [:subscription, :unsubscription, :mys
         @current_user.subscriptions.find_or_create_by(category: category)
       end
       subscribed_categories = @current_user.categories.select(:id, :name, :created_at, :updated_at)
-      render json: {subscribed_categories: subscribed_categories.as_json}, status: :ok
+      render json: { subscribed_categories: subscribed_categories.as_json }, status: :ok
     end
 
     # DELETE /auth/subscription
@@ -105,9 +104,28 @@ before_action :authenticate_request, only: [:subscription, :unsubscription, :mys
       end
     end
 
-      private
-      def user_params
-        params.require(:api_user).permit(:email, :password, :password_confirmation)
+    # GET /auth/subscription_stats
+    def subscription_stats
+      if @current_user.nil?
+        return render json: { error: "Usuario no autenticado" }, status: :unauthorized
       end
-end
+
+      categories = Category.includes(:subscriptions)
+      stats_data = categories.map do |category|
+        {
+          id: category.id,
+          name: category.name,
+          subscribers_count: category.subscriptions.size
+        }
+      end
+
+      render json: stats_data, status: :ok
+    end
+
+    private
+
+    def user_params
+      params.require(:api_user).permit(:email, :password, :password_confirmation)
+    end
+  end
 end
